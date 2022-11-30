@@ -1,13 +1,16 @@
 import { useSelector, useDispatch } from 'react-redux'
-import { addVote } from '../reducers/anecdoteReducer'
+import { updateAnecdote } from '../reducers/anecdoteReducer'
 import {
   clearNotification,
   showNotification,
 } from '../reducers/notificationReducer'
+import anecdoteService from '../services/anecdotes'
 
 let timeoutId
 
 const AnecdoteList = (props) => {
+  const dispatch = useDispatch()
+
   const anecdotes = useSelector(({ anecdotes, filter }) => {
     if (filter === 'ALL') {
       return anecdotes
@@ -16,14 +19,15 @@ const AnecdoteList = (props) => {
       ancedote.content.match(new RegExp(filter, 'i'))
     )
   })
-  const dispatch = useDispatch()
 
-  const handleVote = (id) => {
-    dispatch(addVote(id))
-    const anecdote = anecdotes.find((anecdote) => anecdote.id === id)
+  const handleVote = async (anecdote) => {
+
+    const updatedAnecdote = await anecdoteService.update({...anecdote,votes:anecdote.votes+1})    
+
+    dispatch(updateAnecdote(updatedAnecdote))
+    
     const notification = `you voted ${anecdote.content}`
     dispatch(showNotification(notification))
-
     window.clearTimeout(timeoutId)
     timeoutId = window.setTimeout(() => {
       dispatch(clearNotification())
@@ -37,7 +41,7 @@ const AnecdoteList = (props) => {
           <div>{anecdote.content}</div>
           <div>
             has {anecdote.votes}
-            <button onClick={() => handleVote(anecdote.id)}>vote</button>
+            <button onClick={() => handleVote(anecdote)}>vote</button>
           </div>
         </div>
       ))}
