@@ -3,7 +3,7 @@
     {
       "content": "I'm not specialized in reparing computers.",
       "id": "47144",
-      "votes": 21
+      "votes": 24
     },
     {
       "content": "If it hurts, do it more often",
@@ -53,6 +53,11 @@
     {
       "id": "83673",
       "content": "teste2",
+      "votes": 0
+    },
+    {
+      "id": "5091",
+      "content": "tsat",
       "votes": 0
     }
   ]

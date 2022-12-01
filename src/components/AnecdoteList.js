@@ -1,29 +1,19 @@
-import { useSelector, useDispatch } from 'react-redux'
+import { connect } from 'react-redux'
 import { updateAnecdote } from '../reducers/anecdoteReducer'
 import { setNotification } from '../reducers/notificationReducer'
 
-const AnecdoteList = () => {
-  const dispatch = useDispatch()
-
-  const anecdotes = useSelector(({ anecdotes, filter }) => {
-    if (filter === 'ALL') {
-      return anecdotes
-    }
-    return anecdotes.filter((ancedote) =>
-      ancedote.content.match(new RegExp(filter, 'i'))
-    )
-  })
+const AnecdoteList = (props) => {
 
   const handleVote = async (anecdote) => {
-    dispatch(updateAnecdote({ ...anecdote, votes: anecdote.votes + 1 }))
+    props.updateAnecdote({ ...anecdote, votes: anecdote.votes + 1 })
 
     const notification = `you voted ${anecdote.content}`
-    dispatch(setNotification(notification, 5))
+    props.setNotification(notification, 5)
   }
 
   return (
     <>
-      {anecdotes.map((anecdote) => (
+      {props.anecdotes.map((anecdote) => (
         <div key={anecdote.id}>
           <div>{anecdote.content}</div>
           <div>
@@ -36,4 +26,17 @@ const AnecdoteList = () => {
   )
 }
 
-export default AnecdoteList
+const mapStateToProps = (state) => {
+  if (state.filter === 'ALL') {
+    return { anecdotes: state.anecdotes }
+  }
+  return {
+    anecdotes: state.anecdotes.filter((ancedote) =>
+      ancedote.content.match(new RegExp(state.filter, 'i'))
+    ),
+  }
+}
+
+const mapDispatchToProps = { updateAnecdote, setNotification }
+
+export default connect(mapStateToProps, mapDispatchToProps)(AnecdoteList)
